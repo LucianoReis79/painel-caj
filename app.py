@@ -30,12 +30,33 @@ def carregar_padronizacao():
 mapa_medicamentos = carregar_padronizacao()
 
 # =========================================
+# FUNÇÃO LEITURA SEGURA CSV
+# =========================================
+def ler_csv_seguro(caminho):
+    try:
+        return pd.read_csv(
+            caminho,
+            sep=";",
+            encoding="utf-8",
+            engine="python",
+            on_bad_lines="skip"
+        )
+    except UnicodeDecodeError:
+        return pd.read_csv(
+            caminho,
+            sep=";",
+            encoding="latin1",
+            engine="python",
+            on_bad_lines="skip"
+        )
+
+# =========================================
 # CARREGAR PACIENTES
 # =========================================
 @st.cache_data
 def carregar_pacientes():
 
-    pasta = "Cadastro_de_pacientes"
+    pasta = r"C:\Users\lucia\Cia de Processamento de Dados do Estado da Bahia\Coordenação de Ação Judicial - Cadastro de pacientes"
 
     arquivos = [
         os.path.join(pasta, f)
@@ -46,18 +67,10 @@ def carregar_pacientes():
     dfs = []
 
     for arq in arquivos:
-        df_temp = pd.read_csv(
-            arq,
-            sep=";",
-            encoding="latin1",
-            engine="python",
-            on_bad_lines="skip"
-        )
+        df_temp = ler_csv_seguro(arq)
         dfs.append(df_temp)
 
     return pd.concat(dfs, ignore_index=True)
-
-df = carregar_pacientes()
 
 # =========================================
 # LIMPEZA PACIENTES
