@@ -33,7 +33,8 @@ mapa_medicamentos = carregar_padronizacao()
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
 def ler_csv_seguro(caminho):
-    for encoding in ["utf-8", "utf-8-sig", "cp1252", "latin1"]:
+    def ler_csv_seguro(caminho):
+    for encoding in ["cp1252", "utf-8", "utf-8-sig", "latin1"]:
         try:
             return pd.read_csv(
                 caminho,
@@ -93,8 +94,8 @@ df = carregar_pacientes()
 df.columns = df.columns.str.strip()
 
 # Limpar espaços em todas as colunas texto
-for col in df.columns:
-    df[col] = df[col].astype(str).str.strip()
+for col in df.select_dtypes(include="object").columns:
+    df[col] = df[col].str.strip()
 
 # Remover interessados inválidos (se existir a coluna)
 if "Interessado" in df.columns:
