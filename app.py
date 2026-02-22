@@ -334,29 +334,29 @@ elif pagina == "Resumo por Medicamento":
 # =========================================
 elif pagina == "Distribuições":
 
-    st.title("Painel de Distribuições")
+   st.title("Painel de Distribuições")
 
    @st.cache_data
    def carregar_distribuicoes():
 
-    pasta = "Distribuicao"
+     pasta = "Distribuicao"
 
-    arquivos = [
+     arquivos = [
         os.path.join(pasta, f)
         for f in os.listdir(pasta)
         if f.lower().endswith(".csv")
-    ]
+     ]
 
-    dfs = []
+     dfs = []
 
-    for arq in arquivos:
+     for arq in arquivos:
         df_temp = ler_csv_seguro(arq)
         dfs.append(df_temp)
 
-    df_final = pd.concat(dfs, ignore_index=True)
-    df_final = corrigir_acentos(df_final)
+     df_final = pd.concat(dfs, ignore_index=True)
+     df_final = corrigir_acentos(df_final)
 
-    return df_final
+   return df_final
 
     df_d = carregar_distribuicoes()
 
