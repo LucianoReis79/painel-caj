@@ -337,7 +337,7 @@ elif pagina == "Distribuições":
     st.title("Painel de Distribuições")
 
    @st.cache_data
-def carregar_distribuicoes():
+   def carregar_distribuicoes():
 
     pasta = "Distribuicao"
 
