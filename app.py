@@ -75,7 +75,7 @@ def carregar_pacientes():
  df = corrigir_acentos(df)
  pasta = "Cadastro_de_pacientes"  # pasta dentro do repositório
 
-    if not os.path.exists(pasta):
+   if not os.path.exists(pasta):
         st.error(f"Pasta '{pasta}' não encontrada no projeto.")
         st.stop()
 
@@ -85,7 +85,7 @@ def carregar_pacientes():
         if f.lower().endswith(".csv")
     ]
 
-    if not arquivos:
+   if not arquivos:
         st.error("Nenhum arquivo CSV encontrado na pasta.")
         st.stop()
 
