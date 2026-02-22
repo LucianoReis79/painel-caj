@@ -250,13 +250,11 @@ if pagina == "Lista de Pacientes":
     col1, col2 = st.columns(2)
     col1.metric(
     "Total Pacientes",
-    f"{df_filtrado['Interessado'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    )
+    f"{df_filtrado['Interessado'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
    col2.metric(
-    "Total Medicamentos",
-    f"{df_filtrado['Medicamento'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    )
+   "Total Medicamentos",
+   f"{df_filtrado['Medicamento'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
     st.dataframe(df_filtrado, use_container_width=True)
 
