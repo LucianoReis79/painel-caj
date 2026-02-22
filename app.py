@@ -293,14 +293,12 @@ elif pagina == "Resumo por Medicamento":
     )
 
     col2.metric(
-     "Total Quantidade",
-     f"{resumo['Quantidade'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    )
-   
-   col3.metric(
+    "Total Quantidade",
+    f"{resumo['Quantidade'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+    
+    col3.metric(
     "Total Consumo 30d",
-    f"{resumo['Consumo_Mensal'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    )
+    f"{resumo['Consumo_Mensal'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
     st.dataframe(resumo, use_container_width=True)
 
