@@ -33,7 +33,6 @@ mapa_medicamentos = carregar_padronizacao()
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
 def ler_csv_seguro(caminho):
-    def ler_csv_seguro(caminho):
     for encoding in ["cp1252", "utf-8", "utf-8-sig", "latin1"]:
         try:
             return pd.read_csv(
