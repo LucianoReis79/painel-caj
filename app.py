@@ -41,7 +41,7 @@ def ler_csv_seguro(caminho):
             engine="python",
             on_bad_lines="skip"
         )
-    except UnicodeDecodeError:
+    except Exception:
         return pd.read_csv(
             caminho,
             sep=";",
@@ -56,25 +56,36 @@ def ler_csv_seguro(caminho):
 @st.cache_data
 def carregar_pacientes():
 
-    pasta = "Cadastro_de_pacientes"
+    pasta = "Cadastro_de_pacientes"  # pasta dentro do repositório
+
+    if not os.path.exists(pasta):
+        st.error(f"Pasta '{pasta}' não encontrada no projeto.")
+        st.stop()
 
     arquivos = [
         os.path.join(pasta, f)
         for f in os.listdir(pasta)
         if f.lower().endswith(".csv")
     ]
+
     if not arquivos:
-        st.error("Nenhum arquivo CSV encontrado na pasta de pacientes.")
+        st.error("Nenhum arquivo CSV encontrado na pasta.")
         st.stop()
 
     dfs = []
 
     for arq in arquivos:
-        df_temp = ler_csv_seguro(arq)
-        dfs.append(df_temp)
+        try:
+            df_temp = ler_csv_seguro(arq)
+            dfs.append(df_temp)
+        except Exception as e:
+            st.error(f"Erro ao ler {arq}: {e}")
+            st.stop()
 
     return pd.concat(dfs, ignore_index=True)
 
+# Executa carregamento
+df = carregar_pacientes()
 # =========================================
 # LIMPEZA PACIENTES
 # =========================================
