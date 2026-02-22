@@ -396,7 +396,7 @@ def carregar_distribuicoes():
         "Medicamento (Distribuição)",
         sorted(df_d["Medicamento"].dropna().unique())
     )
-
+    
     periodo = st.sidebar.date_input("Período", [])
 
     df_d_filtrado = df_d.copy()
