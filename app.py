@@ -252,9 +252,9 @@ if pagina == "Lista de Pacientes":
     "Total Pacientes",
     f"{df_filtrado['Interessado'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
-   col2.metric(
-   "Total Medicamentos",
-   f"{df_filtrado['Medicamento'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+    col2.metric(
+    "Total Medicamentos",
+    f"{df_filtrado['Medicamento'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
     st.dataframe(df_filtrado, use_container_width=True)
 
