@@ -16,7 +16,7 @@ if st.button("Atualizar Dados"):
 # =========================================
 @st.cache_data
 def carregar_padronizacao():
-    df_map = pd.read_excel("Tabela Dicionário.xlsx")
+    df_map = pd.read_excel("Tabela_Dicionario.xlsx")
     df_map.columns = df_map.columns.str.strip()
 
     col_antigo = df_map.columns[0]
