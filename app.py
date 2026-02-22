@@ -152,44 +152,67 @@ pagina = st.sidebar.radio(
 )
 
 # =========================================
-# FILTROS GLOBAIS
+# FILTROS GLOBAIS (VERSÃO SEGURA CLOUD)
 # =========================================
 st.sidebar.header("Filtros")
 
-unidades = st.sidebar.multiselect(
-    "Unidade Dispensadora",
-    sorted(df["Unidade Dispensadora"].unique())
-)
+unidades = []
+status = []
+medicamentos = []
+tipo_acao = []
 
-status = st.sidebar.multiselect(
-    "Status",
-    sorted(df["Status"].unique())
-)
+# ===== Unidade =====
+if "Unidade Dispensadora" in df.columns:
+    unidades = st.sidebar.multiselect(
+        "Unidade Dispensadora",
+        sorted(df["Unidade Dispensadora"].dropna().unique())
+    )
 
-medicamentos = st.sidebar.multiselect(
-    "Medicamento",
-    sorted(df["Medicamento"].unique())
-)
+# ===== Status =====
+if "Status" in df.columns:
+    status = st.sidebar.multiselect(
+        "Status",
+        sorted(df["Status"].dropna().unique())
+    )
 
-tipo_acao = st.sidebar.multiselect(
-    "Tipo de Ação",
-    sorted(df["Tipo Ação"].unique())
-)
+# ===== Medicamento =====
+if "Medicamento" in df.columns:
+    medicamentos = st.sidebar.multiselect(
+        "Medicamento",
+        sorted(df["Medicamento"].dropna().unique())
+    )
 
+# ===== Tipo de Ação =====
+if "Tipo Ação" in df.columns:
+    tipo_acao = st.sidebar.multiselect(
+        "Tipo de Ação",
+        sorted(df["Tipo Ação"].dropna().unique())
+    )
+
+# =========================================
+# APLICAR FILTROS COM SEGURANÇA
+# =========================================
 df_filtrado = df.copy()
 
-if unidades:
-    df_filtrado = df_filtrado[df_filtrado["Unidade Dispensadora"].isin(unidades)]
+if unidades and "Unidade Dispensadora" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Unidade Dispensadora"].isin(unidades)
+    ]
 
-if status:
-    df_filtrado = df_filtrado[df_filtrado["Status"].isin(status)]
+if status and "Status" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Status"].isin(status)
+    ]
 
-if medicamentos:
-    df_filtrado = df_filtrado[df_filtrado["Medicamento"].isin(medicamentos)]
+if medicamentos and "Medicamento" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Medicamento"].isin(medicamentos)
+    ]
 
-if tipo_acao:
-    df_filtrado = df_filtrado[df_filtrado["Tipo Ação"].isin(tipo_acao)]
-
+if tipo_acao and "Tipo Ação" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Tipo Ação"].isin(tipo_acao)
+    ]
 # =========================================
 # PÁGINA 1 - LISTA
 # =========================================
