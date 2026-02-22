@@ -33,22 +33,18 @@ mapa_medicamentos = carregar_padronizacao()
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
 def ler_csv_seguro(caminho):
-    try:
-        return pd.read_csv(
-            caminho,
-            sep=";",
-            encoding="utf-8",
-            engine="python",
-            on_bad_lines="skip"
-        )
-    except Exception:
-        return pd.read_csv(
-            caminho,
-            sep=";",
-            encoding="latin1",
-            engine="python",
-            on_bad_lines="skip"
-        )
+    for encoding in ["utf-8", "utf-8-sig", "cp1252", "latin1"]:
+        try:
+            return pd.read_csv(
+                caminho,
+                sep=";",
+                encoding=encoding,
+                engine="python",
+                on_bad_lines="skip"
+            )
+        except Exception:
+            continue
+    raise ValueError(f"Não foi possível ler o arquivo: {caminho}")
 
 # =========================================
 # CARREGAR PACIENTES
@@ -252,8 +248,15 @@ if pagina == "Lista de Pacientes":
     st.info(unidade_exibida)
 
     col1, col2 = st.columns(2)
-    col1.metric("Total Pacientes", df_filtrado["Interessado"].nunique())
-    col2.metric("Total Medicamentos", df_filtrado["Medicamento"].nunique())
+    col1.metric(
+    "Total Pacientes",
+    f"{df_filtrado['Interessado'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+   col2.metric(
+    "Total Medicamentos",
+    f"{df_filtrado['Medicamento'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
 
     st.dataframe(df_filtrado, use_container_width=True)
 
@@ -286,9 +289,20 @@ elif pagina == "Resumo por Medicamento":
     )
 
     col1,col2,col3 = st.columns(3)
-    col1.metric("Total Pacientes", resumo["Pacientes"].sum())
-    col2.metric("Total Quantidade", round(resumo["Quantidade"].sum(),2))
-    col3.metric("Total Consumo 30d", round(resumo["Consumo_Mensal"].sum(),2))
+    col1.metric(
+    "Total Pacientes",
+    f"{resumo['Pacientes'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    col2.metric(
+     "Total Quantidade",
+     f"{resumo['Quantidade'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+   
+   col3.metric(
+    "Total Consumo 30d",
+    f"{resumo['Consumo_Mensal'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
 
     st.dataframe(resumo, use_container_width=True)
 
@@ -395,9 +409,17 @@ elif pagina == "Distribuições":
     total_qtd = df_d_filtrado["Quantidade"].sum()
 
     col1,col2,col3 = st.columns(3)
-    col1.metric("Valor Total Distribuído (R$)", round(total_valor,2))
-    col2.metric("Número de Distribuições", total_distrib)
-    col3.metric("Quantidade Total Distribuída", total_qtd)
+    col1.metric(
+    "Valor Total Distribuído (R$)",
+    f"{total_valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+    col2.metric(
+    "Número de Distribuições",
+    f"{total_distrib:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
+
+    col3.metric(
+    "Quantidade Total Distribuída",
+    f"{total_qtd:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
 
     unidade_exibida = ", ".join(unidades_dist) if unidades_dist else "Todas as Unidades"
     st.markdown("### Unidade Selecionada")
