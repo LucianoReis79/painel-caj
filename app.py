@@ -46,12 +46,33 @@ def ler_csv_seguro(caminho):
             continue
     raise ValueError(f"Não foi possível ler o arquivo: {caminho}")
 
+def corrigir_acentos(df):
+    substituicoes = {
+        "Ã§": "ç",
+        "Ã£": "ã",
+        "Ã¡": "á",
+        "Ã©": "é",
+        "Ã­": "í",
+        "Ã³": "ó",
+        "Ãº": "ú",
+        "Ã": "à",
+        "Âº": "º",
+        "Âª": "ª",
+        "NÂº": "Nº"
+    }
+
+    for col in df.select_dtypes(include="object").columns:
+        for errado, correto in substituicoes.items():
+            df[col] = df[col].str.replace(errado, correto, regex=False)
+
+    return df
+
 # =========================================
 # CARREGAR PACIENTES
 # =========================================
 @st.cache_data
 def carregar_pacientes():
-
+df = corrigir_acentos(df)
     pasta = "Cadastro_de_pacientes"  # pasta dentro do repositório
 
     if not os.path.exists(pasta):
@@ -315,6 +336,7 @@ elif pagina == "Distribuições":
 
     @st.cache_data
     def carregar_distribuicoes():
+    df_d = corrigir_acentos(df_d)
 
         pasta = "Distribuicao"
 
