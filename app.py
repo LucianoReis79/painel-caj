@@ -107,6 +107,7 @@ def carregar_pacientes():
 
     return df_final
 
+
 df = carregar_pacientes()
 
 # =========================================
@@ -152,10 +153,14 @@ mapa_colunas = {
 df.rename(columns=mapa_colunas, inplace=True)
 
 if "Quantidade Autorizada" in df.columns:
-    df["Quantidade Autorizada"] = pd.to_numeric(df["Quantidade Autorizada"], errors="coerce")
+    df["Quantidade Autorizada"] = pd.to_numeric(
+        df["Quantidade Autorizada"], errors="coerce"
+    )
 
 if "Frequência (em dias)" in df.columns:
-    df["Frequência (em dias)"] = pd.to_numeric(df["Frequência (em dias)"], errors="coerce")
+    df["Frequência (em dias)"] = pd.to_numeric(
+        df["Frequência (em dias)"], errors="coerce"
+    )
 
 if (
     "Quantidade Autorizada" in df.columns and
@@ -177,9 +182,149 @@ pagina = st.sidebar.radio(
 )
 
 # =========================================
-# DISTRIBUIÇÕES
+# FILTROS GLOBAIS
 # =========================================
-if pagina == "Distribuições":
+st.sidebar.header("Filtros")
+
+unidades = []
+status = []
+medicamentos = []
+tipo_acao = []
+
+if "Unidade Dispensadora" in df.columns:
+    unidades = st.sidebar.multiselect(
+        "Unidade Dispensadora",
+        sorted(df["Unidade Dispensadora"].dropna().unique())
+    )
+
+if "Status" in df.columns:
+    status = st.sidebar.multiselect(
+        "Status",
+        sorted(df["Status"].dropna().unique())
+    )
+
+if "Medicamento" in df.columns:
+    medicamentos = st.sidebar.multiselect(
+        "Medicamento",
+        sorted(df["Medicamento"].dropna().unique())
+    )
+
+if "Tipo Ação" in df.columns:
+    tipo_acao = st.sidebar.multiselect(
+        "Tipo de Ação",
+        sorted(df["Tipo Ação"].dropna().unique())
+    )
+
+df_filtrado = df.copy()
+
+if unidades and "Unidade Dispensadora" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Unidade Dispensadora"].isin(unidades)
+    ]
+
+if status and "Status" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Status"].isin(status)
+    ]
+
+if medicamentos and "Medicamento" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Medicamento"].isin(medicamentos)
+    ]
+
+if tipo_acao and "Tipo Ação" in df.columns:
+    df_filtrado = df_filtrado[
+        df_filtrado["Tipo Ação"].isin(tipo_acao)
+    ]
+
+# =========================================
+# PÁGINA 1 - LISTA
+# =========================================
+if pagina == "Lista de Pacientes":
+
+    st.title("Lista de Pacientes")
+
+    unidade_exibida = ", ".join(unidades) if unidades else "Todas as Unidades"
+    st.markdown("### Unidade Selecionada")
+    st.info(unidade_exibida)
+
+    col1, col2 = st.columns(2)
+
+    col1.metric(
+        "Total Pacientes",
+        f"{df_filtrado['Interessado'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    col2.metric(
+        "Total Medicamentos",
+        f"{df_filtrado['Medicamento'].nunique():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    st.dataframe(df_filtrado, use_container_width=True)
+
+    csv = df_filtrado.to_csv(index=False, sep=";", encoding="utf-8")
+    st.download_button(
+        "Baixar Lista",
+        csv,
+        "lista_pacientes.csv",
+        "text/csv"
+    )
+
+# =========================================
+# PÁGINA 2 - RESUMO
+# =========================================
+elif pagina == "Resumo por Medicamento":
+
+    st.title("Resumo por Medicamento")
+
+    unidade_exibida = ", ".join(unidades) if unidades else "Todas as Unidades"
+    st.markdown("### Unidade Selecionada")
+    st.info(unidade_exibida)
+
+    df_resumo = df_filtrado[df_filtrado["Status"].str.upper() == "ATIVO"]
+
+    resumo = (
+        df_resumo
+        .groupby("Medicamento")
+        .agg(
+            Pacientes=("Interessado", "nunique"),
+            Quantidade=("Quantidade Autorizada", "sum"),
+            Consumo_Mensal=("Consumo_Mensal_30d", "sum")
+        )
+        .reset_index()
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Total Pacientes",
+        f"{resumo['Pacientes'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    col2.metric(
+        "Total Quantidade",
+        f"{resumo['Quantidade'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    col3.metric(
+        "Total Consumo 30d",
+        f"{resumo['Consumo_Mensal'].sum():,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    st.dataframe(resumo, use_container_width=True)
+
+    csv = resumo.to_csv(index=False, sep=";", encoding="utf-8")
+    st.download_button(
+        "Baixar Resumo",
+        csv,
+        "resumo_medicamentos.csv",
+        "text/csv"
+    )
+
+# =========================================
+# PÁGINA 3 - DISTRIBUIÇÕES
+# =========================================
+elif pagina == "Distribuições":
 
     st.title("Painel de Distribuições")
 
@@ -188,17 +333,29 @@ if pagina == "Distribuições":
 
         pasta = "Distribuicao"
 
+        if not os.path.exists(pasta):
+            st.error(f"Pasta '{pasta}' não encontrada no projeto.")
+            st.stop()
+
         arquivos = [
             os.path.join(pasta, f)
             for f in os.listdir(pasta)
             if f.lower().endswith(".csv")
         ]
 
+        if not arquivos:
+            st.error("Nenhum arquivo CSV encontrado na pasta Distribuicao.")
+            st.stop()
+
         dfs = []
 
         for arq in arquivos:
-            df_temp = ler_csv_seguro(arq)
-            dfs.append(df_temp)
+            try:
+                df_temp = ler_csv_seguro(arq)
+                dfs.append(df_temp)
+            except Exception as e:
+                st.error(f"Erro ao ler {arq}: {e}")
+                st.stop()
 
         df_final = pd.concat(dfs, ignore_index=True)
         df_final = corrigir_acentos(df_final)
@@ -212,4 +369,105 @@ if pagina == "Distribuições":
     for col in df_d.select_dtypes(include="object").columns:
         df_d[col] = df_d[col].str.strip()
 
-    st.dataframe(df_d, use_container_width=True)
+    if "Medicamento" in df_d.columns:
+        df_d["Medicamento"] = (
+            df_d["Medicamento"]
+            .str.upper()
+            .replace(mapa_medicamentos)
+        )
+
+    if "Quantidade" in df_d.columns:
+        df_d["Quantidade"] = pd.to_numeric(df_d["Quantidade"], errors="coerce")
+
+    if "Valor Total R$" in df_d.columns:
+        df_d["Valor Total R$"] = (
+            df_d["Valor Total R$"]
+            .str.replace(".", "", regex=False)
+            .str.replace(",", ".", regex=False)
+        )
+        df_d["Valor Total R$"] = pd.to_numeric(df_d["Valor Total R$"], errors="coerce")
+
+    if "Data Distribuição" in df_d.columns:
+        df_d["Data Distribuição"] = pd.to_datetime(
+            df_d["Data Distribuição"],
+            dayfirst=True,
+            errors="coerce"
+        )
+
+    st.sidebar.subheader("Filtros Distribuição")
+
+    unidades_dist = []
+    medicamentos_dist = []
+
+    if "Unidade Saúde Destino" in df_d.columns:
+        unidades_dist = st.sidebar.multiselect(
+            "Unidade Saúde Destino",
+            sorted(df_d["Unidade Saúde Destino"].dropna().unique())
+        )
+
+    if "Medicamento" in df_d.columns:
+        medicamentos_dist = st.sidebar.multiselect(
+            "Medicamento (Distribuição)",
+            sorted(df_d["Medicamento"].dropna().unique())
+        )
+
+    periodo = st.sidebar.date_input("Período", [])
+
+    df_d_filtrado = df_d.copy()
+
+    if unidades_dist:
+        df_d_filtrado = df_d_filtrado[
+            df_d_filtrado["Unidade Saúde Destino"].isin(unidades_dist)
+        ]
+
+    if medicamentos_dist:
+        df_d_filtrado = df_d_filtrado[
+            df_d_filtrado["Medicamento"].isin(medicamentos_dist)
+        ]
+
+    if len(periodo) == 2 and "Data Distribuição" in df_d_filtrado.columns:
+        df_d_filtrado = df_d_filtrado[
+            (df_d_filtrado["Data Distribuição"] >= pd.to_datetime(periodo[0])) &
+            (df_d_filtrado["Data Distribuição"] <= pd.to_datetime(periodo[1]))
+        ]
+
+    if "Unidade Saúde Origem" in df_d_filtrado.columns:
+        df_d_filtrado = df_d_filtrado.drop(columns=["Unidade Saúde Origem"])
+
+    total_valor = df_d_filtrado["Valor Total R$"].sum() if "Valor Total R$" in df_d_filtrado.columns else 0
+    total_distrib = df_d_filtrado["Nº Distribuição"].nunique() if "Nº Distribuição" in df_d_filtrado.columns else 0
+    total_qtd = df_d_filtrado["Quantidade"].sum() if "Quantidade" in df_d_filtrado.columns else 0
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "Valor Total Distribuído (R$)",
+        f"{total_valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    col2.metric(
+        "Número de Distribuições",
+        f"{total_distrib:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    col3.metric(
+        "Quantidade Total Distribuída",
+        f"{total_qtd:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    )
+
+    unidade_exibida = ", ".join(unidades_dist) if unidades_dist else "Todas as Unidades"
+    st.markdown("### Unidade Selecionada")
+    st.info(unidade_exibida)
+
+    if "Data Distribuição" in df_d_filtrado.columns:
+        df_d_filtrado["Data Distribuição"] = df_d_filtrado["Data Distribuição"].dt.strftime("%d/%m/%Y")
+
+    st.dataframe(df_d_filtrado, use_container_width=True, hide_index=True)
+
+    csv = df_d_filtrado.to_csv(index=False, sep=";", encoding="latin1")
+    st.download_button(
+        "Baixar Distribuições",
+        csv,
+        "distribuicoes.csv",
+        "text/csv"
+    )
