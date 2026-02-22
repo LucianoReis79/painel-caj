@@ -262,7 +262,7 @@ if pagina == "Lista de Pacientes":
 
     st.dataframe(df_filtrado, use_container_width=True)
 
-    csv = df_filtrado.to_csv(index=False, sep=";", encoding="utf-8")
+    csv = df_filtrado.to_csv(index=False, sep=";", encoding="utf-8-sig")
     st.download_button(
         "Baixar Lista",
         csv,
@@ -313,7 +313,7 @@ elif pagina == "Resumo por Medicamento":
 
     st.dataframe(resumo, use_container_width=True)
 
-    csv = resumo.to_csv(index=False, sep=";", encoding="utf-8")
+    csv = resumo.to_csv(index=False, sep=";", encoding="utf-8-sig")
     st.download_button(
         "Baixar Resumo",
         csv,
