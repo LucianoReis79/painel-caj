@@ -62,17 +62,28 @@ df = carregar_pacientes()
 # =========================================
 # LIMPEZA PACIENTES
 # =========================================
+# =========================
+# LIMPEZA PACIENTES (VERSÃO SEGURA CLOUD)
+# =========================
+
+# Limpar nomes das colunas
 df.columns = df.columns.str.strip()
 
+# Limpar espaços em todas as colunas texto
 for col in df.columns:
     df[col] = df[col].astype(str).str.strip()
 
-df = df[
-    (df["Interessado"] != "") &
-    (df["Interessado"].str.lower() != "nan") &
-    (df["Interessado"].str.lower() != "none")
-]
+# Remover interessados inválidos (se existir a coluna)
+if "Interessado" in df.columns:
+    df = df[
+        (df["Interessado"] != "") &
+        (df["Interessado"].str.lower() != "nan") &
+        (df["Interessado"].str.lower() != "none")
+    ]
 
+# =========================
+# PADRONIZAR MEDICAMENTO
+# =========================
 if "Medicamento" in df.columns:
     df["Medicamento"] = (
         df["Medicamento"]
@@ -80,23 +91,58 @@ if "Medicamento" in df.columns:
         .replace(mapa_medicamentos)
     )
 
+# =========================
+# REMOVER SUPLEMENTOS
+# =========================
 palavras_excluir = [
-    "ALIMENTO","DIETA","LEITE","MODULO","ESPESSANTE",
-    "GLUTAMINA","FORMULA","SUPLEMENTO","FRESUBIN",
-    "NOVAMIL","ISOSOURCE","PEPTAMEN","FORMULA INFANTIL",
-    "NUTREN","MODULEN","NUTRISON"
+    "ALIMENTO", "DIETA", "LEITE", "MODULO", "ESPESSANTE",
+    "GLUTAMINA", "FORMULA", "SUPLEMENTO", "FRESUBIN",
+    "NOVAMIL", "ISOSOURCE", "PEPTAMEN", "FORMULA INFANTIL",
+    "NUTREN", "MODULEN", "NUTRISON"
 ]
 
 padrao = "|".join(palavras_excluir)
-df = df[~df["Medicamento"].str.contains(padrao, na=False)]
 
-df["Quantidade Autorizada"] = pd.to_numeric(df["Quantidade Autorizada"], errors="coerce")
-df["Frequência (em dias)"] = pd.to_numeric(df["Frequência (em dias)"], errors="coerce")
+if "Medicamento" in df.columns:
+    df = df[~df["Medicamento"].str.contains(padrao, na=False)]
 
-df["Consumo_Mensal_30d"] = (
-    df["Quantidade Autorizada"] / df["Frequência (em dias)"]
-) * 30
+# =========================
+# PADRONIZAR NOMES DE COLUNAS PROBLEMÁTICAS
+# =========================
+mapa_colunas = {
+    "Frequencia (em dias)": "Frequência (em dias)",
+    "Frequência(em dias)": "Frequência (em dias)",
+    "QuantidadeAutorizada": "Quantidade Autorizada"
+}
 
+df.rename(columns=mapa_colunas, inplace=True)
+
+# =========================
+# CONVERTER COLUNAS NUMÉRICAS (SE EXISTIREM)
+# =========================
+if "Quantidade Autorizada" in df.columns:
+    df["Quantidade Autorizada"] = pd.to_numeric(
+        df["Quantidade Autorizada"], errors="coerce"
+    )
+
+if "Frequência (em dias)" in df.columns:
+    df["Frequência (em dias)"] = pd.to_numeric(
+        df["Frequência (em dias)"], errors="coerce"
+    )
+
+# =========================
+# CALCULAR CONSUMO MENSAL (SE POSSÍVEL)
+# =========================
+if (
+    "Quantidade Autorizada" in df.columns and
+    "Frequência (em dias)" in df.columns
+):
+    df["Consumo_Mensal_30d"] = (
+        df["Quantidade Autorizada"] /
+        df["Frequência (em dias)"]
+    ) * 30
+else:
+    df["Consumo_Mensal_30d"] = 0
 # =========================================
 # NAVEGAÇÃO
 # =========================================
