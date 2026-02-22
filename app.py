@@ -35,7 +35,7 @@ mapa_medicamentos = carregar_padronizacao()
 @st.cache_data
 def carregar_pacientes():
 
-    pasta = r"C:\Users\lucia\Cia de Processamento de Dados do Estado da Bahia\Coordenação de Ação Judicial - Cadastro de pacientes"
+    pasta = "Cadastro_de_pacientes"
 
     arquivos = [
         os.path.join(pasta, f)
@@ -210,7 +210,7 @@ elif pagina == "Distribuições":
     @st.cache_data
     def carregar_distribuicoes():
 
-        pasta = r"C:\Users\lucia\Cia de Processamento de Dados do Estado da Bahia\Coordenação de Ação Judicial - Distribuição"
+        pasta = "Distribuicao"
 
         arquivos = [
             os.path.join(pasta,f)
