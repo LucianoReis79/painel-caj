@@ -73,7 +73,7 @@ def corrigir_acentos(df):
 @st.cache_data
 def carregar_pacientes():
  df = corrigir_acentos(df)
-    pasta = "Cadastro_de_pacientes"  # pasta dentro do repositório
+ pasta = "Cadastro_de_pacientes"  # pasta dentro do repositório
 
     if not os.path.exists(pasta):
         st.error(f"Pasta '{pasta}' não encontrada no projeto.")
