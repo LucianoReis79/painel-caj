@@ -33,22 +33,21 @@ mapa_medicamentos = carregar_padronizacao()
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
 def ler_csv_seguro(caminho):
+    with open(caminho, "rb") as f:
+        conteudo = f.read()
+
     try:
-        return pd.read_csv(
-            caminho,
-            sep=";",
-            encoding="cp1252",
-            engine="python",
-            on_bad_lines="skip"
-        )
+        texto = conteudo.decode("cp1252")
     except:
-        return pd.read_csv(
-            caminho,
-            sep=";",
-            encoding="latin1",
-            engine="python",
-            on_bad_lines="skip"
-        )
+        texto = conteudo.decode("latin1")
+
+    from io import StringIO
+    return pd.read_csv(
+        StringIO(texto),
+        sep=";",
+        engine="python",
+        on_bad_lines="skip"
+    )
 
 # =========================================
 # CORRIGIR ACENTOS
