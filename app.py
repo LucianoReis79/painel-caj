@@ -56,7 +56,7 @@ def ler_csv_seguro(caminho):
 @st.cache_data
 def carregar_pacientes():
 
-    pasta = r"C:\Users\lucia\Cia de Processamento de Dados do Estado da Bahia\Coordenação de Ação Judicial - Cadastro de pacientes"
+    pasta = "Cadastro_de_pacientes"
 
     arquivos = [
         os.path.join(pasta, f)
