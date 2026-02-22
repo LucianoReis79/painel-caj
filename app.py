@@ -72,10 +72,10 @@ def corrigir_acentos(df):
 # =========================================
 @st.cache_data
 def carregar_pacientes():
- df = corrigir_acentos(df)
- pasta = "Cadastro_de_pacientes"  # pasta dentro do repositório
 
-   if not os.path.exists(pasta):
+    pasta = "Cadastro_de_pacientes"
+
+    if not os.path.exists(pasta):
         st.error(f"Pasta '{pasta}' não encontrada no projeto.")
         st.stop()
 
@@ -85,7 +85,7 @@ def carregar_pacientes():
         if f.lower().endswith(".csv")
     ]
 
-   if not arquivos:
+    if not arquivos:
         st.error("Nenhum arquivo CSV encontrado na pasta.")
         st.stop()
 
@@ -99,8 +99,10 @@ def carregar_pacientes():
             st.error(f"Erro ao ler {arq}: {e}")
             st.stop()
 
-    return pd.concat(dfs, ignore_index=True)
+    df_final = pd.concat(dfs, ignore_index=True)
+    df_final = corrigir_acentos(df_final)
 
+    return df_final
 # Executa carregamento
 df = carregar_pacientes()
 # =========================================
@@ -334,31 +336,27 @@ elif pagina == "Distribuições":
 
     st.title("Painel de Distribuições")
 
-    @st.cache_data
-    def carregar_distribuicoes():
-    df_d = corrigir_acentos(df_d)
+   @st.cache_data
+def carregar_distribuicoes():
 
-        pasta = "Distribuicao"
+    pasta = "Distribuicao"
 
-        arquivos = [
-            os.path.join(pasta,f)
-            for f in os.listdir(pasta)
-            if f.lower().endswith(".csv")
-        ]
+    arquivos = [
+        os.path.join(pasta, f)
+        for f in os.listdir(pasta)
+        if f.lower().endswith(".csv")
+    ]
 
-        dfs = []
+    dfs = []
 
-        for arq in arquivos:
-            df_temp = pd.read_csv(
-                arq,
-                sep=";",
-                encoding="latin1",
-                engine="python",
-                on_bad_lines="skip"
-            )
-            dfs.append(df_temp)
+    for arq in arquivos:
+        df_temp = ler_csv_seguro(arq)
+        dfs.append(df_temp)
 
-        return pd.concat(dfs, ignore_index=True)
+    df_final = pd.concat(dfs, ignore_index=True)
+    df_final = corrigir_acentos(df_final)
+
+    return df_final
 
     df_d = carregar_distribuicoes()
 
