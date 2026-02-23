@@ -37,7 +37,7 @@ def ler_csv_seguro(caminho):
     try:
         return pd.read_csv(
             caminho,
-            sep=";",
+            sep=",",
             encoding="utf-8",
             engine="python",
             on_bad_lines="skip"
@@ -45,8 +45,8 @@ def ler_csv_seguro(caminho):
     except:
         return pd.read_csv(
             caminho,
-            sep=";",
-            encoding="latin1",
+            sep=",",
+            encoding="utf-8",
             engine="python",
             on_bad_lines="skip"
         )
@@ -266,7 +266,7 @@ if pagina == "Lista de Pacientes":
 
     st.dataframe(df_filtrado, use_container_width=True)
 
-    csv = df_filtrado.to_csv(index=False, sep=";", encoding="utf-8-sig")
+    csv = df_filtrado.to_csv(index=False, sep=",", encoding="utf-8-sig")
     st.download_button(
         "Baixar Lista",
         csv,
@@ -317,7 +317,7 @@ elif pagina == "Resumo por Medicamento":
 
     st.dataframe(resumo, use_container_width=True)
 
-    csv = resumo.to_csv(index=False, sep=";", encoding="utf-8-sig")
+    csv = resumo.to_csv(index=False, sep=",", encoding="utf-8-sig")
     st.download_button(
         "Baixar Resumo",
         csv,
@@ -468,7 +468,7 @@ elif pagina == "Distribuições":
 
     st.dataframe(df_d_filtrado, use_container_width=True, hide_index=True)
 
-    csv = df_d_filtrado.to_csv(index=False, sep=";", encoding="latin1")
+    csv = df_d_filtrado.to_csv(index=False, sep=",", encoding="latin1")
     st.download_button(
         "Baixar Distribuições",
         csv,
