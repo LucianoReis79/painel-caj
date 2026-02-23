@@ -37,7 +37,7 @@ def ler_csv_seguro(caminho):
     try:
         return pd.read_csv(
             caminho,
-            sep=",",
+            sep=";",
             encoding="utf-8",
             engine="python",
             on_bad_lines="skip"
@@ -45,35 +45,11 @@ def ler_csv_seguro(caminho):
     except:
         return pd.read_csv(
             caminho,
-            sep=",",
-            encoding="utf-8",
+            sep=";",
+            encoding="latin1",
             engine="python",
             on_bad_lines="skip"
         )
-# =========================================
-# CORRIGIR ACENTOS
-# =========================================
-def corrigir_acentos(df):
-    substituicoes = {
-        "Ã§": "ç",
-        "Ã£": "ã",
-        "Ã¡": "á",
-        "Ã©": "é",
-        "Ã­": "í",
-        "Ã³": "ó",
-        "Ãº": "ú",
-        "Ã": "à",
-        "Âº": "º",
-        "Âª": "ª",
-        "NÂº": "Nº"
-    }
-
-    for col in df.select_dtypes(include="object").columns:
-        for errado, correto in substituicoes.items():
-            df[col] = df[col].str.replace(errado, correto, regex=False)
-
-    return df
-
 # =========================================
 # CARREGAR PACIENTES
 # =========================================
@@ -91,6 +67,7 @@ def carregar_pacientes():
         for f in os.listdir(pasta)
         if f.lower().endswith(".csv")
     ]
+
     if not arquivos:
         st.error("Nenhum arquivo CSV encontrado na pasta.")
         st.stop()
@@ -265,7 +242,7 @@ if pagina == "Lista de Pacientes":
 
     st.dataframe(df_filtrado, use_container_width=True)
 
-    csv = df_filtrado.to_csv(index=False, sep=",", encoding="utf-8-sig")
+    csv = df_filtrado.to_csv(index=False, sep=";", encoding="utf-8-sig")
     st.download_button(
         "Baixar Lista",
         csv,
@@ -316,7 +293,7 @@ elif pagina == "Resumo por Medicamento":
 
     st.dataframe(resumo, use_container_width=True)
 
-    csv = resumo.to_csv(index=False, sep=",", encoding="utf-8-sig")
+    csv = resumo.to_csv(index=False, sep=";", encoding="utf-8-sig")
     st.download_button(
         "Baixar Resumo",
         csv,
@@ -467,11 +444,10 @@ elif pagina == "Distribuições":
 
     st.dataframe(df_d_filtrado, use_container_width=True, hide_index=True)
 
-    csv = df_d_filtrado.to_csv(index=False, sep=",", encoding="latin1")
+    csv = df_d_filtrado.to_csv(index=False, sep=";", encoding="latin1")
     st.download_button(
         "Baixar Distribuições",
         csv,
         "distribuicoes.csv",
         "text/csv"
     )
-
