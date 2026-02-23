@@ -37,15 +37,33 @@ except Exception as e:
 # =========================================
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
-def ler_csv_seguro(caminho):
-    
+
+# Escolher colunas carregada
+
+COLUNAS_PACIENTES = [
+    "Número do processo",
+    "Data Entrada",
+    "Interessado",
+    "Medicamento",
+    "Unidade Dispensadora",
+    "Status",
+    "Tipo Ação",
+    "Quantidade Autorizada",
+    "Frequência (em dias)",
+    "Período de tratamento (em meses)",
+    "Data Primeiro Atendimento"
+]
+
+
+def ler_csv_seguro(caminho, colunas=None):
     try:
         return pd.read_csv(
             caminho,
             sep=";",
             encoding="utf-8",
             engine="python",
-            on_bad_lines="skip"
+            on_bad_lines="skip",
+            usecols=colunas
         )
     except:
         return pd.read_csv(
@@ -53,8 +71,10 @@ def ler_csv_seguro(caminho):
             sep=";",
             encoding="latin1",
             engine="python",
-            on_bad_lines="skip"
+            on_bad_lines="skip",
+            usecols=colunas
         )
+        
 # =========================================
 # CORRIGIR ACENTOS
 # =========================================
@@ -105,7 +125,7 @@ def carregar_pacientes():
 
     for arq in arquivos:
         try:
-            df_temp = ler_csv_seguro(arq)
+            df_temp = ler_csv_seguro(arq, COLUNAS_PACIENTES)
             dfs.append(df_temp)
         except Exception as e:
             st.error(f"Erro ao ler {arq}: {e}")
