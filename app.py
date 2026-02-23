@@ -38,32 +38,14 @@ except Exception as e:
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
 
-# Escolher colunas carregada
-
-COLUNAS_PACIENTES = [
-    "Número do processo ",
-    "Data Entrada ",
-    "Interessado ",
-    "Medicamento ",
-    "Unidade Dispensadora ",
-    "Status ",
-    "Tipo Ação ",
-    "Quantidade Autorizada ",
-    "Frequência (em dias) ",
-    "Período de tratamento (em meses) ",
-    "Data Primeiro Atendimento "
-]
-
-
-def ler_csv_seguro(caminho, colunas=None):
+def ler_csv_seguro(caminho):
     try:
         return pd.read_csv(
             caminho,
             sep=";",
             encoding="utf-8",
             engine="python",
-            on_bad_lines="skip",
-            usecols=colunas
+            on_bad_lines="skip"
         )
     except:
         return pd.read_csv(
@@ -71,10 +53,8 @@ def ler_csv_seguro(caminho, colunas=None):
             sep=";",
             encoding="latin1",
             engine="python",
-            on_bad_lines="skip",
-            usecols=colunas
+            on_bad_lines="skip"
         )
-        
 # =========================================
 # CORRIGIR ACENTOS
 # =========================================
@@ -131,10 +111,31 @@ def carregar_pacientes():
             st.error(f"Erro ao ler {arq}: {e}")
             st.stop()
 
+      
     df_final = pd.concat(dfs, ignore_index=True)
-    # df_final = corrigir_acentos(df_final)
 
+    # Selecionar apenas colunas desejadas
+    # Escolher colunas carregada
+
+    COLUNAS_PACIENTES = [
+    "Número do processo ",
+    "Data Entrada ",
+    "Interessado ",
+    "Medicamento ",
+    "Unidade Dispensadora ",
+    "Status ",
+    "Tipo Ação ",
+    "Quantidade Autorizada ",
+    "Frequência (em dias) ",
+    "Período de tratamento (em meses) ",
+    "Data Primeiro Atendimento "
+    ]
+
+    colunas_existentes = [c for c in COLUNAS_PACIENTES if c in df_final.columns]
+
+    df_final = df_final[colunas_existentes]
     return df_final
+    
 
 
 # df = carregar_pacientes()
