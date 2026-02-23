@@ -91,7 +91,6 @@ def carregar_pacientes():
         for f in os.listdir(pasta)
         if f.lower().endswith(".csv")
     ]
-
     if not arquivos:
         st.error("Nenhum arquivo CSV encontrado na pasta.")
         st.stop()
@@ -475,3 +474,4 @@ elif pagina == "Distribuições":
         "distribuicoes.csv",
         "text/csv"
     )
+
