@@ -37,8 +37,8 @@ except Exception as e:
 # =========================================
 # FUNÇÃO LEITURA SEGURA CSV
 # =========================================
-
 def ler_csv_seguro(caminho):
+    
     try:
         return pd.read_csv(
             caminho,
@@ -105,37 +105,16 @@ def carregar_pacientes():
 
     for arq in arquivos:
         try:
-            df_temp = ler_csv_seguro(arq, COLUNAS_PACIENTES)
+            df_temp = ler_csv_seguro(arq)
             dfs.append(df_temp)
         except Exception as e:
             st.error(f"Erro ao ler {arq}: {e}")
             st.stop()
 
-      
     df_final = pd.concat(dfs, ignore_index=True)
+    # df_final = corrigir_acentos(df_final)
 
-    # Selecionar apenas colunas desejadas
-    # Escolher colunas carregada
-
-    COLUNAS_PACIENTES = [
-    "Número do processo ",
-    "Data Entrada ",
-    "Interessado ",
-    "Medicamento ",
-    "Unidade Dispensadora ",
-    "Status ",
-    "Tipo Ação ",
-    "Quantidade Autorizada ",
-    "Frequência (em dias) ",
-    "Período de tratamento (em meses) ",
-    "Data Primeiro Atendimento "
-    ]
-
-    colunas_existentes = [c for c in COLUNAS_PACIENTES if c in df_final.columns]
-
-    df_final = df_final[colunas_existentes]
     return df_final
-    
 
 
 # df = carregar_pacientes()
