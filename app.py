@@ -107,7 +107,7 @@ def carregar_pacientes():
             st.stop()
 
     df_final = pd.concat(dfs, ignore_index=True)
-    df_final = corrigir_acentos(df_final)
+    # df_final = corrigir_acentos(df_final)
 
     return df_final
 
@@ -362,7 +362,7 @@ elif pagina == "Distribuições":
                 st.stop()
 
         df_final = pd.concat(dfs, ignore_index=True)
-        df_final = corrigir_acentos(df_final)
+        #df_final = corrigir_acentos(df_final)
 
         return df_final
 
