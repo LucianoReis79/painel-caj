@@ -117,7 +117,12 @@ def carregar_pacientes():
     return df_final
 
 
-df = carregar_pacientes()
+# df = carregar_pacientes()
+try:
+    df = carregar_pacientes()
+except Exception as e:
+    st.error(f"Erro nos pacientes: {e}")
+    st.stop()
 
 # =========================================
 # LIMPEZA PACIENTES
