@@ -41,17 +41,17 @@ except Exception as e:
 # Escolher colunas carregada
 
 COLUNAS_PACIENTES = [
-    "Número do processo",
-    "Data Entrada",
-    "Interessado",
-    "Medicamento",
-    "Unidade Dispensadora",
-    "Status",
-    "Tipo Ação",
-    "Quantidade Autorizada",
-    "Frequência (em dias)",
-    "Período de tratamento (em meses)",
-    "Data Primeiro Atendimento"
+    "Número do processo ",
+    "Data Entrada ",
+    "Interessado ",
+    "Medicamento ",
+    "Unidade Dispensadora ",
+    "Status ",
+    "Tipo Ação ",
+    "Quantidade Autorizada ",
+    "Frequência (em dias) ,
+    "Período de tratamento (em meses) ",
+    "Data Primeiro Atendimento "
 ]
 
 
