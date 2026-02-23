@@ -51,6 +51,30 @@ def ler_csv_seguro(caminho):
             on_bad_lines="skip"
         )
 # =========================================
+# CORRIGIR ACENTOS
+# =========================================
+def corrigir_acentos(df):
+    substituicoes = {
+        "Ã§": "ç",
+        "Ã£": "ã",
+        "Ã¡": "á",
+        "Ã©": "é",
+        "Ã­": "í",
+        "Ã³": "ó",
+        "Ãº": "ú",
+        "Ã": "à",
+        "Âº": "º",
+        "Âª": "ª",
+        "NÂº": "Nº"
+    }
+
+    for col in df.select_dtypes(include="object").columns:
+        for errado, correto in substituicoes.items():
+            df[col] = df[col].str.replace(errado, correto, regex=False)
+
+    return df
+
+# =========================================
 # CARREGAR PACIENTES
 # =========================================
 @st.cache_data
