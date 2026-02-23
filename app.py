@@ -49,7 +49,7 @@ COLUNAS_PACIENTES = [
     "Status ",
     "Tipo Ação ",
     "Quantidade Autorizada ",
-    "Frequência (em dias) ,
+    "Frequência (em dias) ,"
     "Período de tratamento (em meses) ",
     "Data Primeiro Atendimento "
 ]
