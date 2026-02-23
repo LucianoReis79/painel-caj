@@ -27,7 +27,12 @@ def carregar_padronizacao():
 
     return dict(zip(df_map[col_antigo], df_map[col_novo]))
 
-mapa_medicamentos = carregar_padronizacao()
+# mapa_medicamentos = carregar_padronizacao()
+try:
+    mapa_medicamentos = carregar_padronizacao()
+except Exception as e:
+    st.error(f"Erro no dicionário: {e}")
+    mapa_medicamentos = {}
 
 # =========================================
 # FUNÇÃO LEITURA SEGURA CSV
